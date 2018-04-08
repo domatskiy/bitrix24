@@ -14,6 +14,11 @@ class Lead
     const STATUS_CONVERTED = 'CONVERTED'; # Сконвертирован
     const STATUS_JUNK = 'JUNK'; # Некачественный лид
 
+    const FIELD_TITLE = 'TITLE';
+    const FIELD_NAME = 'NAME';
+    const FIELD_EMAIL_HOME = 'EMAIL_HOME';
+    const FIELD_PHONE_MOBILE = 'PHONE_MOBILE';
+
     const SOURCE_SELF = 'SELF'; # Свой контакт
     const SOURCE_PARTNER = 'PARTNER'; # Существующий клиент
     const SOURCE_CALL = 'CALL'; # Звонок
@@ -28,14 +33,12 @@ class Lead
             $status,
             $currency;
 
-    public $fields = ['NAME', 'EMAIL_HOME', 'PHONE_MOBILE'];
-
     protected $data = [];
 
-    function __construct($title, $source, $status, $currency)
+    function __construct($title, $source = null, $status = null, $currency = null)
     {
 
-        if(!array_key_exists($status, self::getStatusList()))
+        if($status && !array_key_exists($status, self::getStatusList()))
             throw new \Exception('not correct status');
 
         $this->data['TITLE'] = $title;
@@ -48,7 +51,25 @@ class Lead
     {
         return [
             self::STATUS_NEW => 'Новый',
+            self::STATUS_ASSIGNED => 'Назначен ответственный',
+            self::STATUS_DETAILS => 'Уточнение информации',
+            self::STATUS_CANNOT_CONTACT => 'Не удалось связаться',
+            self::STATUS_IN_PROCESS => 'В обработке',
+            self::STATUS_ON_HOLD => 'Обработка приостановлена',
+            self::STATUS_RESTORED => 'Восстановлен',
+            self::STATUS_CONVERTED => 'Сконвертирован',
+            self::STATUS_JUNK => 'Некачественный лид',
             ];
+    }
+
+    public static function getFieldsList()
+    {
+        return [
+            self::FIELD_TITLE => '',
+            self::FIELD_NAME => 'Имя',
+            self::FIELD_EMAIL_HOME => '',
+            self::FIELD_PHONE_MOBILE => ''
+        ];
     }
 
     public function addField($code, $value)
@@ -56,7 +77,7 @@ class Lead
         if(!is_string($code) || !$code)
             throw new \Exception('not correct code');
 
-        if(!is_array($code, $this->fields))
+        if(!array_key_exists($code, self::getFieldsList()))
             throw new \Exception('not correct field '.$code);
 
         $this->data[$code] = $value;

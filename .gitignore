@@ -2,6 +2,7 @@ config.ini
 composer.phar
 composer.lock
 composer-test.lock
+log/
 vendor/
 build/artifacts/
 artifacts/

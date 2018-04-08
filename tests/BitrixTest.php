@@ -1,8 +1,6 @@
 <?php
 namespace Domatskiy\Tests;
 
-use Domatskiy\Bitrix24;
-
 class Bitrix24Test extends \PHPUnit_Framework_TestCase
 {
     private $config;
@@ -35,9 +33,15 @@ class Bitrix24Test extends \PHPUnit_Framework_TestCase
     public function testSubmit()
     {
         $config_bx = $this->config['bitrix24'];
-        $bitrix24 = new Bitrix24($config_bx['host'], $config_bx['port'], $config_bx['login'], $config_bx['password']);
+        $bitrix24 = new \Domatskiy\Bitrix24($config_bx['host'], $config_bx['port'], $config_bx['login'], $config_bx['password']);
+        $bitrix24->debug(true, 'log');
 
-        $lead = new Bitrix24\Lead('TEST_SEND');
+        $lead = new \Domatskiy\Bitrix24\Lead('TEST_SEND', \Domatskiy\Bitrix24\Lead::SOURCE_WEB, \Domatskiy\Bitrix24\Lead::STATUS_IN_PROCESS);
+
+        $lead->addField(\Domatskiy\Bitrix24\Lead::FIELD_NAME, 'user_name');
+        $lead->addField(\Domatskiy\Bitrix24\Lead::FIELD_PHONE_MOBILE, '+79111111111');
+        $lead->addField(\Domatskiy\Bitrix24\Lead::FIELD_EMAIL_HOME, 'test@test.ru');
+
         $rs = $bitrix24->send($lead);
 
         //$this->assertInstanceOf(Response::class, $response);
