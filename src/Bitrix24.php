@@ -20,6 +20,13 @@ class Bitrix24
     private $debug = false,
             $debug_log_path = '';
 
+    /**
+     * Bitrix24 constructor.
+     * @param $host string
+     * @param $port string
+     * @param $login string
+     * @param $password string
+     */
     function __construct($host, $port, $login, $password)
     {
         $this->host = $host;
@@ -29,12 +36,22 @@ class Bitrix24
         $this->password = $password;
     }
 
+    /**
+     * @param $enable boolean
+     * @param $log_path string
+     */
     public function debug($enable, $log_path)
     {
         $this->debug = $enable;
         $this->debug_log_path = $log_path;
     }
 
+    /**
+     * @param Lead $lead
+     * @return bool
+     * @throws ArgumentException
+     * @throws AuthException
+     */
     function send(\Domatskiy\Bitrix24\Lead $lead)
     {
         if($this->debug)

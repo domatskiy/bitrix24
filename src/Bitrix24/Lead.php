@@ -35,6 +35,14 @@ class Lead
 
     protected $data = [];
 
+    /**
+     * Lead constructor.
+     * @param $title
+     * @param null $source
+     * @param null $status
+     * @param null $currency
+     * @throws \Exception
+     */
     function __construct($title, $source = null, $status = null, $currency = null)
     {
 
@@ -47,6 +55,9 @@ class Lead
         $this->currency = $currency;
     }
 
+    /**
+     * @return array
+     */
     public static function getStatusList()
     {
         return [
@@ -62,6 +73,9 @@ class Lead
             ];
     }
 
+    /**
+     * @return array
+     */
     public static function getFieldsList()
     {
         return [
@@ -72,6 +86,11 @@ class Lead
         ];
     }
 
+    /**
+     * @param $code
+     * @param $value
+     * @throws \Exception
+     */
     public function addField($code, $value)
     {
         if(!is_string($code) || !$code)
@@ -83,6 +102,11 @@ class Lead
         $this->data[$code] = $value;
     }
 
+    /**
+     * @param $code
+     * @param $value
+     * @throws \Exception
+     */
     public function addFieldExt($code, $value)
     {
         if(!is_string($code) || !$code)
@@ -91,21 +115,33 @@ class Lead
         $this->data[$code] = $value;
     }
 
+    /**
+     * @return null
+     */
     public function getStatus()
     {
         return $this->status;
     }
 
+    /**
+     * @return null
+     */
     public function getSource()
     {
         return $this->source;
     }
 
+    /**
+     * @return null
+     */
     public function getCurrency()
     {
         return $this->currency;
     }
 
+    /**
+     * @return array
+     */
     public function getFields()
     {
         return $this->data;
