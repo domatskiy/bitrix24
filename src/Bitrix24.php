@@ -90,7 +90,6 @@ class Bitrix24
             $url .= ':'.trim($this->port);
 
         $url .= '/crm/configs/import/lead.php';
-        $log->info('url='.$url);
 
         $client = new \GuzzleHttp\Client([
             'timeout'  => 30.0,
