@@ -117,9 +117,41 @@ class Bitrix24
 
         if($response->getStatusCode() === 200) # Лид добавлен
         {
-            //var_dump($response->getBody());
             if($this->debug)
                 $log->info('success');
+
+            $result = null;
+
+            try{
+                $contents = $response->getBody()->getContents();
+                $contents = str_replace('\'', '"', $contents);
+
+                $result = json_decode($contents);
+
+            } catch (\Exception $e) {
+                $result = null;
+                throw new \Exception($e->getMessage(), $e->getCode());
+                return false;
+            }
+
+            if($result && isset($result->error) && isset($result->error_message))
+            {
+                switch ((int)$result->error)
+                {
+                    case 200:
+                        return true;
+                        break;
+
+                    case 403:
+                        throw new AuthException($result->error_message);
+                        break;
+
+                    default:
+                        throw new \Exception($result->error_message, $result->error);
+                        break;
+                }
+
+            }
 
             return true;
         }
