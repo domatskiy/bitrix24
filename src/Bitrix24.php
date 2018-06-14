@@ -126,7 +126,7 @@ class Bitrix24
                 $contents = $response->getBody()->getContents();
 
                 if($this->debug)
-                    $log->log('contents='.$contents);
+                    $log->debug('contents='.$contents);
 
                 $contents = str_replace('\'', '"', $contents);
 
