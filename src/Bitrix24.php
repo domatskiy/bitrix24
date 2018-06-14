@@ -124,6 +124,10 @@ class Bitrix24
 
             try{
                 $contents = $response->getBody()->getContents();
+
+                if($this->debug)
+                    $log->log('contents='.$contents);
+
                 $contents = str_replace('\'', '"', $contents);
 
                 $result = json_decode($contents);
@@ -131,6 +135,10 @@ class Bitrix24
             } catch (\Exception $e) {
                 $result = null;
                 throw new \Exception($e->getMessage(), $e->getCode());
+
+                if($this->debug)
+                    $log->error(''.$e->getMessage());
+
                 return false;
             }
 
@@ -139,7 +147,8 @@ class Bitrix24
                 switch ((int)$result->error)
                 {
                     case 200:
-                        return true;
+                    case 201:
+                        return $result->ID;
                         break;
 
                     case 403:
@@ -171,7 +180,7 @@ class Bitrix24
         }
 
         if($this->debug)
-            $log->error('Responce status: '.$response->getStatusCode());
+            $log->error('Response status: '.$response->getStatusCode());
 
         throw new \Exception('Не обработанный ответ');
     }
