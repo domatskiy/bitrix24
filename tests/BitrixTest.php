@@ -1,7 +1,10 @@
 <?php
 namespace Domatskiy\Tests;
 
-class Bitrix24Test extends \PHPUnit_Framework_TestCase
+use Illuminate\Http\File;
+use PHPUnit\Framework\TestCase;
+
+class Bitrix24Test extends TestCase
 {
     private $config;
     public function setUp()
@@ -11,6 +14,9 @@ class Bitrix24Test extends \PHPUnit_Framework_TestCase
 
         if(!isset($this->config['bitrix24']))
             throw new \Exception('no config for bitrix24');
+
+        if(!isset($this->config['fields']))
+            throw new \Exception('no config for fields');
 
         if(!isset($this->config['bitrix24']['host']) && !$this->config['bitrix24']['host'])
             throw new \Exception('no config host for bitrix24');
@@ -41,6 +47,14 @@ class Bitrix24Test extends \PHPUnit_Framework_TestCase
         $lead->addField(\Domatskiy\Bitrix24\Lead::FIELD_NAME, 'user_name');
         $lead->addField(\Domatskiy\Bitrix24\Lead::FIELD_PHONE_MOBILE, '+79111111111');
         $lead->addField(\Domatskiy\Bitrix24\Lead::FIELD_EMAIL_HOME, 'test@test.ru');
+
+        // FILE
+        $file_one = new File(__DIR__.'/one.txt', true);
+        $lead->addFieldExt($this->config['fields']['file'], $file_one);
+
+        // FILES
+        $file_multi = new File(__DIR__.'/multi.txt');
+        $lead->addFieldExt($this->config['fields']['files'], [$file_multi, $file_multi]);
 
         $rs = $bitrix24->send($lead);
 
