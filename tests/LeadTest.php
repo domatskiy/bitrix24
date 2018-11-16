@@ -1,6 +1,6 @@
 <?php
 
-namespace Domatskiy\Tests;
+namespace Domatskiy\Bitrix24\Tests;
 
 #require '../vendor/autoload.php';
 

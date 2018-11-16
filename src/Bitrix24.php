@@ -41,11 +41,14 @@ class Bitrix24
         {
             $log = new Logger('bitrix24_lead_send');
 
+            $date = date('Y-m-d');
+
             if($this->debug_log_path)
-                $log->pushHandler(new StreamHandler($this->debug_log_path.'/bitrix24_lead_send.log', Logger::INFO));
+                $log->pushHandler(new StreamHandler($this->debug_log_path.'/bitrix24_lead_send'.$date.'.log', Logger::DEBUG));
         }
 
         $postData = [];
+        $multipartData = [];
 
         $postData['LOGIN'] = $this->login;
         $postData['PASSWORD'] = $this->password;
@@ -67,6 +70,36 @@ class Bitrix24
         foreach ($lead->getFields() as $key => $value)
             $postData[$key] = $value;
 
+        foreach ($lead->getFileFields() as $key => $value)
+        {
+            if($value instanceof Lead\File)
+            {
+                /**
+                 * @var $value Lead\File
+                 */
+                $multipartData[$key] = [
+                    'name'     => $value->getName(),
+                    'contents' => fopen($value->getPath(), 'r')
+                ];
+            }
+            else
+            {
+                $tmp = [];
+                foreach ($value as $file)
+                {
+                    /**
+                     * @var $file Lead\File
+                     */
+                    $tmp[$key] = [
+                        'name'     => $file->getName(),
+                        'contents' => fopen($file->getPath(), 'r')
+                    ];
+                }
+
+                $multipartData[$key] = $tmp;
+            }
+        }
+
         $url = 'https://'.trim($this->host);
 
         if($this->port)
@@ -83,10 +116,17 @@ class Bitrix24
             ],
         ]);
 
-        $response = $client->post($url, [
-            //'body' => json_encode($postData),
-            'form_params' => $postData,
-            /*'multipart' => [
+        $config = [];
+
+        //$config['body'] => json_encode($postData),
+
+        if(!empty($postData))
+            $config['form_params'] = $postData;
+
+        if(!empty($multipartData))
+            $config['multipart'] = $multipartData;
+
+        /*'multipart' => [
                 [
                     'name'     => 'file_name',
                     'contents' => fopen('/path/to/file', 'r')
@@ -97,29 +137,36 @@ class Bitrix24
                     'filename' => 'csv_header.csv'
                 ]
             ]*/
-            ]);
+
+        $response = $client->post($url, $config);
 
         if($response->getStatusCode() === 200) # Лид добавлен
         {
-            //var_dump($response->getBody());
+            if($this->debug)
+                $log->debug('body '.print_r($response->getBody(), true));
+
             if($this->debug)
                 $log->info('success');
 
             return true;
         }
-        elseif ($client->getStatusCode() === 400) # Отсутствуют параметры или параметры не прошли проверку
+        elseif ($response->getStatusCode() === 400) # Отсутствуют параметры или параметры не прошли проверку
         {
-            if($this->debug)
-                $log->warning('Отсутствуют параметры');
+            $message = 'Отсутствуют параметры';
 
-            throw new ArgumentException();
+            if($this->debug)
+                $log->warning($message);
+
+            throw new ArgumentException($message, $response->getStatusCode());
         }
-        elseif ($client->getStatusCode() === 403) # Ошибка авторизации или доступа
+        elseif ($response->getStatusCode() === 403) # Ошибка авторизации или доступа
         {
-            if($this->debug)
-                $log->warning('Ошибка авторизации');
+            $message = 'Ошибка авторизации';
 
-            throw new AuthException();
+            if($this->debug)
+                $log->warning($message);
+
+            throw new AuthException($message, 403);
         }
 
         if($this->debug)

@@ -2,6 +2,8 @@
 
 namespace Domatskiy\Bitrix24;
 
+use Domatskiy\Bitrix24;
+
 class Lead
 {
     const STATUS_NEW = 'NEW'; # новый
@@ -34,6 +36,7 @@ class Lead
             $currency;
 
     protected $data = [];
+    protected $data_files = [];
 
     function __construct($title, $source = null, $status = null, $currency = null)
     {
@@ -91,6 +94,34 @@ class Lead
         $this->data[$code] = $value;
     }
 
+    /**
+     * @param string $code
+     * @param Bitrix24\Lead\File|Bitrix24\Lead\File[] $path
+     * @throws \Exception
+     */
+    public function addFile(string $code, $file)
+    {
+        if(!is_string($code) || !$code)
+            throw new \Exception('not correct code');
+
+        if(is_array($file))
+        {
+            /**
+             * @var $f Bitrix24\Lead\File
+             */
+            foreach ($file as $index => $f)
+            {
+                if(!($f instanceof Bitrix24\Lead\File))
+                    throw new \Exception('not correct file '.$index);
+            }
+
+        }
+        elseif(!($file instanceof Bitrix24\Lead\File))
+            throw new \Exception('not correct file');
+
+        $this->data_files[$code] = $file;
+    }
+
     public function getStatus()
     {
         return $this->status;
@@ -106,9 +137,20 @@ class Lead
         return $this->currency;
     }
 
+    /**
+     * @return array
+     */
     public function getFields()
     {
         return $this->data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFileFields()
+    {
+        return $this->data_files;
     }
 
 }

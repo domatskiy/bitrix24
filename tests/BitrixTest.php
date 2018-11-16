@@ -1,7 +1,6 @@
 <?php
-namespace Domatskiy\Tests;
+namespace Domatskiy\Bitrix24\Tests;
 
-use Illuminate\Http\File;
 use PHPUnit\Framework\TestCase;
 
 class Bitrix24Test extends TestCase
