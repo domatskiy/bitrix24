@@ -6,8 +6,24 @@ use PHPUnit\Framework\TestCase;
 class Bitrix24Test extends TestCase
 {
     private $config;
+
+    protected
+        $file_one_name,
+        $file_one_path;
+
+    protected
+        $file_multi_name,
+        $file_multi_path;
+
     public function setUp()
     {
+        $this->file_one_path = __DIR__.'/one.txt';
+        $this->file_one_name = 'one.txt';
+
+        $this->file_multi_path = __DIR__.'/one.txt';
+        $this->file_multi_name = 'one.txt';
+
+
         $reader = new \Piwik\Ini\IniReader();
         $this->config = $reader->readFile(__DIR__.'/config.ini');
 
@@ -34,6 +50,45 @@ class Bitrix24Test extends TestCase
     {
 
     }
+
+    public function testFileField()
+    {
+
+
+        try {
+
+            $file = new Lead\File($this->file_one_path, $this->file_one_name);
+            $this->assertTrue($file->getName() == $this->file_one_name, 'err file name');
+            $this->assertTrue($file->getPath() == $this->file_one_path, 'err file path');
+
+        } catch (\Exception $e) {
+            $this->assertTrue(false, 'err file');
+        }
+
+        try {
+            $file = new Lead\File(__DIR__.'/one__none.txt', 'one.txt');
+            $this->assertTrue(false, 'err file');
+
+        } catch (\Exception $e) {
+
+        }
+
+    }
+
+    public function testCreateLead()
+    {
+        $lead = new \Domatskiy\Bitrix24\Lead('TEST');
+        $this->assertTrue(($lead instanceof Lead), 'error messages not array');
+
+        $lead->addField('TITLE', 'sd');
+
+        $file = new Lead\File($this->file_one_path, $this->file_one_name);
+        $lead->addFieldExt('FILE', $file);
+
+        $file_multi = new Lead\File($this->file_multi_path, $this->file_multi_name);
+        $lead->addFieldExt('FILEM', [$file_multi, $file_multi]);
+    }
+
 
     public function testSubmit()
     {
