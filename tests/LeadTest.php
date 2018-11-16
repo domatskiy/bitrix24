@@ -5,8 +5,9 @@ namespace Domatskiy\Tests;
 #require '../vendor/autoload.php';
 
 use Domatskiy\Bitrix24\Lead;
+use PHPUnit\Framework\TestCase;
 
-class ResponseTest extends \PHPUnit_Framework_TestCase
+class ResponseTest extends TestCase
 {
     public function setUp()
     {
