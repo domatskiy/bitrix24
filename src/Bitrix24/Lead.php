@@ -20,11 +20,22 @@ class Lead
     const FIELD_NAME = 'NAME';
     const FIELD_EMAIL_HOME = 'EMAIL_HOME';
     const FIELD_PHONE_MOBILE = 'PHONE_MOBILE';
+    const FIELD_COMMENTS = 'COMMENTS';
+    const FIELD_SOURCE_DESCRIPTION = 'SOURCE_DESCRIPTION';
+    const FIELD_STATUS_DESCRIPTION = 'STATUS_DESCRIPTION';
 
     const SOURCE_SELF = 'SELF'; # Свой контакт
     const SOURCE_PARTNER = 'PARTNER'; # Существующий клиент
     const SOURCE_CALL = 'CALL'; # Звонок
     const SOURCE_WEB = 'WEB'; # Веб-сайт
+    const SOURCE_EMAIL = 'EMAIL';
+    const SOURCE_CONFERENCE = 'CONFERENCE';
+    const SOURCE_TRADE_SHOW = 'TRADE_SHOW';
+    const SOURCE_EMPLOYEE = 'EMPLOYEE';
+    const SOURCE_COMPANY = 'COMPANY';
+    const SOURCE_HR = 'HR';
+    const SOURCE_MAIL = 'MAIL';
+    const SOURCE_OTHER = 'OTHER';
 
 
     const CURRENCY_RUB = 'RUB';

@@ -158,6 +158,7 @@ class Bitrix24
 
         if($response->getStatusCode() === 200) # Лид добавлен
         {
+            $lead_id = (int)$response->getBody();
 
             if($this->debug)
                 $log->debug('body '.print_r($response->getBody(), true));
@@ -172,7 +173,7 @@ class Bitrix24
 
                 $contents = str_replace('\'', '"', $contents);
 
-                $result = json_decode($contents);
+                $result = @json_decode($contents);
 
             } catch (\Exception $e) {
                 $result = null;
