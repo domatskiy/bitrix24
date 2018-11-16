@@ -12,13 +12,13 @@ use Monolog\Handler\StreamHandler;
 class Bitrix24
 {
     private $login = '',
-            $password = '';
+        $password = '';
 
     private $port = '',
-            $host = '';
+        $host = '';
 
     private $debug = false,
-            $debug_log_path = '';
+        $debug_log_path = '';
 
     /**
      * Bitrix24 constructor.
@@ -94,12 +94,12 @@ class Bitrix24
                 /**
                  * @var $value Lead\File
                  */
-                $multipartData[$key] = [
-                    'name'     => $value->getName(),
+                $multipartData[] = [
+                    'name'     => $key, # $value->getName(),
                     'contents' => fopen($value->getPath(), 'r')
                 ];
             }
-            else
+            elseif(is_array($value))
             {
                 $tmp = [];
                 foreach ($value as $file)
@@ -107,13 +107,13 @@ class Bitrix24
                     /**
                      * @var $file Lead\File
                      */
-                    $tmp[$key] = [
-                        'name'     => $file->getName(),
+                    $multipartData[] = [
+                        'name'     => $key.'[]', #$file->getName(),
                         'contents' => fopen($file->getPath(), 'r')
                     ];
                 }
 
-                $multipartData[$key] = $tmp;
+                // $multipartData[$key] = $tmp;
             }
         }
 
@@ -136,11 +136,22 @@ class Bitrix24
 
         //$config['body'] => json_encode($postData),
 
-        if(!empty($postData))
-            $config['form_params'] = $postData;
+        // if(!empty($postData))
+        //    $config['form_params'] = $postData;
+
+        foreach ($postData as $name => $co)
+        {
+            $multipartData[] = [
+                'name' => $name,
+                'contents' => $co
+            ];
+        }
+
 
         if(!empty($multipartData))
             $config['multipart'] = $multipartData;
+
+        var_dump($config);
 
         /*'multipart' => [
                 [
@@ -158,8 +169,6 @@ class Bitrix24
 
         if($response->getStatusCode() === 200) # Лид добавлен
         {
-            $lead_id = (int)$response->getBody();
-
             if($this->debug)
                 $log->debug('body '.print_r($response->getBody(), true));
 
