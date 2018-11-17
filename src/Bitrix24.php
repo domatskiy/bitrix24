@@ -54,6 +54,17 @@ class Bitrix24
      */
     function send(\Domatskiy\Bitrix24\Lead $lead): Result
     {
+        return $this->sendLead($lead);
+    }
+
+    /**
+     * @param Lead $lead
+     * @return Result
+     * @throws ArgumentException
+     * @throws AuthException
+     */
+    function sendLead(\Domatskiy\Bitrix24\Lead $lead): Result
+    {
         if($this->debug)
         {
             $log = new Logger('bitrix24_lead_send');
