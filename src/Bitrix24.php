@@ -2,38 +2,38 @@
 
 namespace Domatskiy;
 
+use Domatskiy\Bitrix24\Connection;
 use Domatskiy\Bitrix24\Lead;
 use Domatskiy\Bitrix24\Exception\ArgumentException;
 use Domatskiy\Bitrix24\Exception\AuthException;
 
+use Domatskiy\Bitrix24\Result;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
 class Bitrix24
 {
-    private $login = '',
-        $password = '';
+    /**
+     * @var $connection Connection
+     */
+    private
+        $connection;
 
-    private $port = '',
-        $host = '';
-
-    private $debug = false,
+    private
+        $debug = false,
         $debug_log_path = '';
 
     /**
      * Bitrix24 constructor.
-     * @param $host string
-     * @param $port string
-     * @param $login string
-     * @param $password string
+     * @param Connection $connection
+     * @throws \Exception
      */
-    function __construct($host, $port, $login, $password)
+    function __construct($connection)
     {
-        $this->host = $host;
-        $this->port = $port;
+        if(!($connection instanceof Connection))
+            throw new \Exception('connection');
 
-        $this->login = $login;
-        $this->password = $password;
+        $this->connection = $connection;
     }
 
     /**
@@ -48,11 +48,11 @@ class Bitrix24
 
     /**
      * @param Lead $lead
-     * @return bool
+     * @return Result
      * @throws ArgumentException
      * @throws AuthException
      */
-    function send(\Domatskiy\Bitrix24\Lead $lead)
+    function send(\Domatskiy\Bitrix24\Lead $lead): Result
     {
         if($this->debug)
         {
@@ -67,8 +67,8 @@ class Bitrix24
         $postData = [];
         $multipartData = [];
 
-        $postData['LOGIN'] = $this->login;
-        $postData['PASSWORD'] = $this->password;
+        $postData['LOGIN'] = $this->connection->getLogin();
+        $postData['PASSWORD'] = $this->connection->getPassword();
 
         #if (defined('AUTH'))
         #    $postData['AUTH'] = HASH;
@@ -117,10 +117,10 @@ class Bitrix24
             }
         }
 
-        $url = 'https://'.trim($this->host);
+        $url = 'https://'.trim($this->connection->getHost());
 
-        if($this->port)
-            $url .= ':'.trim($this->port);
+        if($this->connection->getPort())
+            $url .= ':'.trim($this->connection->getPort());
 
         $url .= '/crm/configs/import/lead.php';
 
@@ -134,65 +134,63 @@ class Bitrix24
 
         $config = [];
 
-        //$config['body'] => json_encode($postData),
-
-        // if(!empty($postData))
-        //    $config['form_params'] = $postData;
-
-        foreach ($postData as $name => $co)
+        if(!empty($multipartData))
         {
-            $multipartData[] = [
-                'name' => $name,
-                'contents' => $co
-            ];
+            foreach ($postData as $name => $co)
+            {
+                $multipartData[] = [
+                    'name' => $name,
+                    'contents' => $co
+                ];
+            }
+
+            $config['multipart'] = $multipartData;
+        }
+        else
+        {
+            $config['form_params'] = $postData;
         }
 
-
-        if(!empty($multipartData))
-            $config['multipart'] = $multipartData;
-
-        var_dump($config);
-
-        /*'multipart' => [
-                [
-                    'name'     => 'file_name',
-                    'contents' => fopen('/path/to/file', 'r')
-                ],
-                [
-                    'name'     => 'csv_header',
-                    'contents' => 'First Name, Last Name, Username',
-                    'filename' => 'csv_header.csv'
-                ]
-            ]*/
-
         $response = $client->post($url, $config);
+
+        $result = null;
+
+        try{
+            $contents = $response->getBody()->getContents();
+
+            if($this->debug)
+                $log->debug('contents='.$contents);
+
+            $contents = str_replace('\'', '"', $contents);
+
+            $result = @json_decode($contents);
+
+        } catch (\Exception $e) {
+
+            throw new \Exception($e->getMessage(), $e->getCode());
+
+        }
+
+        #echo '$result=';
+        #var_dump($result);
+
+        /**
+         * $result=object(stdClass)#694 (4) {
+        ["error"]=>
+        string(3) "201"
+        ["ID"]=>
+        string(2) "20"
+        ["error_message"]=>
+        string(23) "Лид добавлен"
+        ["AUTH"]=>
+        string(32) "fc1d45860c4a83026b721a8bc938d"
+        }
+         */
 
         if($response->getStatusCode() === 200) # Лид добавлен
         {
             if($this->debug)
                 $log->debug('body '.print_r($response->getBody(), true));
-
-            $result = null;
-
-            try{
-                $contents = $response->getBody()->getContents();
-
-                if($this->debug)
-                    $log->debug('contents='.$contents);
-
-                $contents = str_replace('\'', '"', $contents);
-
-                $result = @json_decode($contents);
-
-            } catch (\Exception $e) {
-                $result = null;
-                throw new \Exception($e->getMessage(), $e->getCode());
-
-                if($this->debug)
-                    $log->error(''.$e->getMessage());
-
-                return false;
-            }
 
             if($result && isset($result->error) && isset($result->error_message))
             {
@@ -200,7 +198,19 @@ class Bitrix24
                 {
                     case 200:
                     case 201:
-                        return $result->ID;
+
+                        $res = new Result($result->ID, $result->error_message);
+                        return $res;
+
+                        break;
+
+                    case 400:
+
+                        if($this->debug)
+                            $log->warning($result->error_message);
+
+                        throw new ArgumentException($result->error_message, $response->getStatusCode());
+
                         break;
 
                     case 403:
@@ -238,6 +248,6 @@ class Bitrix24
         if($this->debug)
             $log->error('Response status: '.$response->getStatusCode());
 
-        throw new \Exception('Не обработанный ответ');
+        throw new \Exception('Необработанный ответ');
     }
 }
