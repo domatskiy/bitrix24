@@ -4,7 +4,7 @@ namespace Domatskiy\Bitrix24;
 
 use Domatskiy\Bitrix24;
 
-class Lead
+class Lead implements \ArrayAccess, \Serializable
 {
     /**
      * STATUS
@@ -278,4 +278,72 @@ class Lead
         return $this->data_files;
     }
 
+    /**
+     * @param string $code
+     * @param mixed $value
+     */
+    public function __set($code, $value)
+    {
+        if(!is_string($code) || strlen($code) < 1)
+            throw new \Exception('not correct file code');
+
+        $this->data[$code] = $value;
+    }
+
+    public function __get($code)
+    {
+        if(array_key_exists($code, $this->data))
+            return $this->data[$code];
+
+        return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function serialize()
+    {
+        return serialize($this->data);
+    }
+
+    /**
+     * @param string $data
+     */
+    public function unserialize($data)
+    {
+        $this->data = unserialize($data);
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     * @throws \Exception
+     */
+    public function offsetSet($offset, $value)
+    {
+        if (is_null($offset))
+            throw new \Exception('field code can not by null');
+
+        $this->data[$offset] = $value;
+    }
+
+    public function offsetExists($offset) {
+        return isset($this->data[$offset]);
+    }
+
+    public function offsetUnset($offset) {
+        unset($this->data[$offset]);
+    }
+
+    public function offsetGet($offset) {
+        return isset($this->data[$offset]) ? $this->data[$offset] : null;
+    }
 }

@@ -2,14 +2,16 @@
 
 namespace Domatskiy\Bitrix24\Lead;
 
-class File
+class File implements \Serializable
 {
-    protected
-        $path;
+    /**
+     * @var string
+     */
+    protected $path;
 
     /**
      * File constructor.
-     * @param $path
+     * @param string $path
      */
     function __construct($path)
     {
@@ -27,6 +29,30 @@ class File
     function getPath()
     {
         return $this->path;
+    }
+
+    /**
+     * @return string
+     */
+    public function serialize()
+    {
+        return serialize([
+            'path' => $this->path
+        ]);
+    }
+
+    /**
+     * @param string $data
+     */
+    public function unserialize($data)
+    {
+        $d = unserialize($data);
+
+        foreach (get_object_vars($this) as $code)
+        {
+            if(array_key_exists($code, $d))
+                $this->{$code} = $d[$code];
+        }
     }
 
 }
