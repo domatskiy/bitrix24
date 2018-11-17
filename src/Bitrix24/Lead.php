@@ -6,6 +6,9 @@ use Domatskiy\Bitrix24;
 
 class Lead
 {
+    /**
+     * STATUS
+     */
     const STATUS_NEW = 'NEW'; # новый
     const STATUS_ASSIGNED = 'ASSIGNED'; # Назначен ответственный
     const STATUS_DETAILS = 'DETAILS'; # Уточнение информации
@@ -16,14 +19,54 @@ class Lead
     const STATUS_CONVERTED = 'CONVERTED'; # Сконвертирован
     const STATUS_JUNK = 'JUNK'; # Некачественный лид
 
+    /**
+     * FIELDS
+     */
     const FIELD_TITLE = 'TITLE';
+
     const FIELD_NAME = 'NAME';
+    const FIELD_LAST_NAME = 'LAST_NAME';
+    const FIELD_SECOND_NAME = 'SECOND_NAME';
+    const FIELD_ADDRESS = 'ADDRESS';
+
+    const FIELD_COMPANY_TITLE = 'COMPANY_TITLE';
+    const FIELD_POST = 'POST';
+
     const FIELD_EMAIL_HOME = 'EMAIL_HOME';
+    const FIELD_EMAIL_WORK = 'EMAIL_WORK';
+    const FIELD_EMAIL_OTHER = 'EMAIL_OTHER';
+
     const FIELD_PHONE_MOBILE = 'PHONE_MOBILE';
+    const FIELD_PHONE_WORK = 'PHONE_WORK';
+    const FIELD_PHONE_FAX = 'PHONE_FAX';
+    const FIELD_PHONE_HOME = 'PHONE_HOME';
+    const FIELD_PHONE_PAGER = 'PHONE_PAGER';
+    const FIELD_PHONE_OTHER = 'PHONE_OTHER';
+
+    const FIELD_WEB_WORK = 'WEB_WORK';
+    const FIELD_WEB_HOME = 'WEB_HOME';
+    const FIELD_WEB_FACEBOOK = 'WEB_FACEBOOK';
+    const FIELD_WEB_LIVEJOURNAL = 'WEB_LIVEJOURNAL';
+    const FIELD_WEB_TWITTER = 'WEB_TWITTER';
+    const FIELD_WEB_OTHER = 'WEB_OTHER';
+
+    const FIELD_IM_SKYPE = 'IM_SKYPE';
+    const FIELD_IM_ICQ = 'IM_ICQ';
+    const FIELD_IM_MSN = 'IM_MSN';
+    const FIELD_IM_JABBER = 'IM_JABBER';
+    const FIELD_IM_OTHER = 'IM_OTHER';
+
+    const FIELD_ASSIGNED_BY_ID = 'ASSIGNED_BY_ID';
+    const FIELD_PRODUCT_ID = 'PRODUCT_ID';
+    const FIELD_OPPORTUNITY = 'OPPORTUNITY';
+
     const FIELD_COMMENTS = 'COMMENTS';
     const FIELD_SOURCE_DESCRIPTION = 'SOURCE_DESCRIPTION';
     const FIELD_STATUS_DESCRIPTION = 'STATUS_DESCRIPTION';
 
+    /**
+     * SOURCE
+     */
     const SOURCE_SELF = 'SELF'; # Свой контакт
     const SOURCE_PARTNER = 'PARTNER'; # Существующий клиент
     const SOURCE_CALL = 'CALL'; # Звонок
@@ -37,7 +80,9 @@ class Lead
     const SOURCE_MAIL = 'MAIL';
     const SOURCE_OTHER = 'OTHER';
 
-
+    /**
+     * CURRENCY
+     */
     const CURRENCY_RUB = 'RUB';
     const CURRENCY_USD = 'USD';
     const CURRENCY_EUR = 'EUR';
@@ -92,6 +137,8 @@ class Lead
      */
     public static function getFieldsList()
     {
+        # TODO add fields
+        
         return [
             self::FIELD_TITLE => '',
             self::FIELD_NAME => 'Имя',

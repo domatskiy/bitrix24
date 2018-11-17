@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: domatskiy
- * Date: 17.11.2018
- * Time: 8:35
- */
 
 namespace Domatskiy\Bitrix24;
-
 
 class Result
 {
