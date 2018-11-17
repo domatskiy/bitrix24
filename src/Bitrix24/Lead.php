@@ -138,12 +138,49 @@ class Lead
     public static function getFieldsList()
     {
         # TODO add fields
-        
+
         return [
             self::FIELD_TITLE => '',
-            self::FIELD_NAME => 'Имя',
-            self::FIELD_EMAIL_HOME => '',
-            self::FIELD_PHONE_MOBILE => ''
+
+            self::FIELD_SOURCE_DESCRIPTION => 'source description',
+            self::FIELD_STATUS_DESCRIPTION => 'status description',
+
+            self::FIELD_NAME => 'name',
+            self::FIELD_LAST_NAME => 'last name',
+            self::FIELD_SECOND_NAME => 'second name',
+            self::FIELD_ADDRESS => 'address',
+
+            self::FIELD_EMAIL_HOME => 'home email',
+            self::FIELD_EMAIL_WORK => 'work email',
+            self::FIELD_EMAIL_OTHER => 'other email',
+
+            self::FIELD_PHONE_MOBILE => 'mobile phone',
+            self::FIELD_PHONE_HOME => 'home phone',
+            self::FIELD_PHONE_WORK => 'work phone',
+            self::FIELD_PHONE_PAGER => 'pager phone',
+            self::FIELD_PHONE_FAX => 'fax',
+            self::FIELD_PHONE_OTHER => 'other',
+
+            self::FIELD_COMPANY_TITLE => 'company',
+            self::FIELD_POST => 'post',
+
+            self::FIELD_WEB_FACEBOOK => 'facebook',
+            self::FIELD_WEB_HOME => 'personal site',
+            self::FIELD_WEB_LIVEJOURNAL => 'livejornal',
+            self::FIELD_WEB_TWITTER => 'twitter',
+            self::FIELD_WEB_OTHER => 'other',
+            self::FIELD_WEB_WORK => 'work site',
+
+            self::FIELD_IM_ICQ => 'isq',
+            self::FIELD_IM_JABBER => 'jabber',
+            self::FIELD_IM_MSN => 'msn',
+            self::FIELD_IM_SKYPE => 'skype',
+            self::FIELD_IM_OTHER => 'other',
+
+            self::FIELD_PRODUCT_ID => 'product id',
+            self::FIELD_ASSIGNED_BY_ID => '',
+
+            self::FIELD_COMMENTS => 'comments',
         ];
     }
 
