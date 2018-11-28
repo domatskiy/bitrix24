@@ -164,7 +164,7 @@ class Bitrix24
 
         $response = $client->post($url, $config);
 
-        $result = null;
+        $responseData = null;
 
         try{
             $contents = $response->getBody()->getContents();
@@ -173,17 +173,16 @@ class Bitrix24
                 $log->debug('contents='.$contents);
 
             $contents = str_replace('\'', '"', $contents);
+            $responseData = @json_decode($contents);
 
-            $result = @json_decode($contents);
+            if($this->debug)
+                $log->debug('$responseData='.$responseData);
 
         } catch (\Exception $e) {
 
             throw new \Exception($e->getMessage(), $e->getCode());
 
         }
-
-        #echo '$result=';
-        #var_dump($result);
 
         /**
          * $result=object(stdClass)#694 (4) {
@@ -200,42 +199,48 @@ class Bitrix24
 
         if($response->getStatusCode() === 200) # Лид добавлен
         {
-            if($this->debug)
-                $log->debug('body '.print_r($response->getBody(), true));
+            if(!$responseData)
+                throw new \Exception('not correct response');
 
-            if($result && isset($result->error) && isset($result->error_message))
+            if(
+                $responseData &&
+                isset($responseData->error) &&
+                isset($responseData->error_message)
+            )
             {
-                switch ((int)$result->error)
+                switch ((int)$responseData->error)
                 {
                     case 200:
                     case 201:
 
-                        $res = new Result($result->ID, $result->error_message);
-                        return $res;
+                    if(!isset($responseData->ID))
+                        throw new \Exception('not correct response, need ID');
+
+                        return new Result($responseData->ID, isset($responseData->error_message) ? $responseData->error_message : '');
 
                         break;
 
                     case 400:
 
                         if($this->debug)
-                            $log->warning($result->error_message);
+                            $log->warning($responseData->error_message);
 
-                        throw new ArgumentException($result->error_message, $response->getStatusCode());
+                        throw new ArgumentException($responseData->error_message, $response->getStatusCode());
 
                         break;
 
                     case 403:
-                        throw new AuthException($result->error_message);
+                        throw new AuthException($responseData->error_message);
                         break;
 
                     default:
-                        throw new \Exception($result->error_message, $result->error);
+                        throw new \Exception($responseData->error_message, $responseData->error);
                         break;
                 }
 
             }
 
-            return true;
+            throw new \Exception('not correct response');
         }
         elseif ($response->getStatusCode() === 400) # Отсутствуют параметры или параметры не прошли проверку
         {
