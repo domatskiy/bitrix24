@@ -169,14 +169,14 @@ class Bitrix24
         try{
             $contents = $response->getBody()->getContents();
 
-            if($this->debug)
-                $log->debug('contents='.$contents);
+            #if($this->debug)
+            #    $log->debug('contents='.$contents);
 
             $contents = str_replace('\'', '"', $contents);
             $responseData = @json_decode($contents);
 
             if($this->debug)
-                $log->debug('$responseData='.$responseData);
+                $log->debug('$responseData='.print_r($responseData, true));
 
         } catch (\Exception $e) {
 
