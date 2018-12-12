@@ -80,6 +80,7 @@ class Bitrix24
 
         $postData['LOGIN'] = $this->connection->getLogin();
         $postData['PASSWORD'] = $this->connection->getPassword();
+        $postData['method'] = 'lead.add';
 
         #if (defined('AUTH'))
         #    $postData['AUTH'] = HASH;
