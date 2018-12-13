@@ -97,7 +97,15 @@ class Bitrix24
         #$postData['PRODUCT_ID'] = 'PRODUCT_1';
 
         foreach ($lead->getFields() as $key => $value)
-            $postData[$key] = $value;
+        {
+            if(is_array($value))
+            {
+                foreach ($value as $index => $val)
+                    $postData[$key.'['.$index.']'] = $val;
+            }
+            else
+                $postData[$key] = $value;
+        }
 
         foreach ($lead->getFileFields() as $key => $value)
         {
