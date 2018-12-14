@@ -121,19 +121,20 @@ class Bitrix24
             }
             elseif(is_array($value))
             {
-                $tmp = [];
                 foreach ($value as $file)
                 {
                     /**
                      * @var $file Lead\File
                      */
+
+                    if(!($file instanceof Lead\File))
+                        throw new \Exception('not correct file with index '.$index.' for field '.$key);
+
                     $multipartData[] = [
-                        'name'     => $key.'[]', #$file->getName(),
+                        'name'     => $key.'[]',
                         'contents' => fopen($file->getPath(), 'r')
                     ];
                 }
-
-                // $multipartData[$key] = $tmp;
             }
         }
 
@@ -177,9 +178,6 @@ class Bitrix24
 
         try{
             $contents = $response->getBody()->getContents();
-
-            #if($this->debug)
-            #    $log->debug('contents='.$contents);
 
             $contents = str_replace('\'', '"', $contents);
             $responseData = @json_decode($contents);
@@ -225,7 +223,12 @@ class Bitrix24
                     if(!isset($responseData->ID))
                         throw new \Exception('not correct response, need ID');
 
-                        return new Result($responseData->ID, isset($responseData->error_message) ? $responseData->error_message : '');
+                        $lead_add_result = new Result($responseData->ID, isset($responseData->error_message) ? $responseData->error_message : '');
+
+                        if(isset($responseData->AUTH) && $responseData->AUTH)
+                            $lead_add_result->setAuth($responseData->AUTH);
+
+                        return $lead_add_result;
 
                         break;
 

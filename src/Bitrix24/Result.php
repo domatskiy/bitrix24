@@ -6,7 +6,8 @@ class Result
 {
     protected
         $id,
-        $message;
+        $message,
+        $auth;
 
     function __construct($id, $message)
     {
@@ -22,5 +23,15 @@ class Result
     function getMessage()
     {
         return $this->message;
+    }
+
+    function setAuth(string $auth): void
+    {
+        $this->auth = $auth;
+    }
+
+    function getAuth(): string
+    {
+        return $this->auth;
     }
 }
