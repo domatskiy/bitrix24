@@ -1,3 +1,6 @@
+Проект перенесен в gitlab  
+https://gitlab.com/domatskiy/bitrix24  
+  
 # Bitrix24
 
 * sending leads to Bitrix24
